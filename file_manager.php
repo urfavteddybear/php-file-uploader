@@ -41,6 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     exit;
 }
 
+// Handle search query
+$searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+if ($searchQuery) {
+    $uploadedFiles = array_filter($uploadedFiles, function($file) use ($searchQuery) {
+        return stripos($file['name'], $searchQuery) !== false;
+    });
+}
+
 // Pagination
 $perPage = 18;
 $totalFiles = count($uploadedFiles);
@@ -112,6 +120,14 @@ $paginatedFiles = array_slice($uploadedFiles, $start, $perPage);
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">File Manager</h2>
+        <a href="upload.php" class="btn btn-primary mb-4">Upload File</a>
+        
+        <!-- Search Box -->
+        <form method="GET" action="" class="form-inline mb-4">
+            <input type="text" name="search" class="form-control mr-2" placeholder="Search files" value="<?= htmlspecialchars($searchQuery); ?>">
+            <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
+        
         <div class="file-list">
             <?php if (!empty($paginatedFiles)) { ?>
                 <?php foreach ($paginatedFiles as $file) { ?>
@@ -138,17 +154,17 @@ $paginatedFiles = array_slice($uploadedFiles, $start, $perPage);
         <!-- Pagination -->
         <ul class="pagination">
             <?php if ($page > 1): ?>
-                <li class="page-item"><a class="page-link" href="?page=<?= $page - 1; ?>">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="?page=<?= $page - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">Previous</a></li>
             <?php else: ?>
                 <li class="page-item disabled"><span class="page-link">Previous</span></li>
             <?php endif; ?>
             
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <li class="page-item <?= ($i === $page) ? 'active' : ''; ?>"><a class="page-link" href="?page=<?= $i; ?>"><?= $i; ?></a></li>
+                <li class="page-item <?= ($i === $page) ? 'active' : ''; ?>"><a class="page-link" href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>"><?= $i; ?></a></li>
             <?php endfor; ?>
             
             <?php if ($page < $totalPages): ?>
-                <li class="page-item"><a class="page-link" href="?page=<?= $page + 1; ?>">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page=<?= $page + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">Next</a></li>
             <?php else: ?>
                 <li class="page-item disabled"><span class="page-link">Next</span></li>
             <?php endif; ?>
