@@ -65,7 +65,7 @@ $paginatedFiles = array_slice($uploadedFiles, $start, $perPage);
             margin-top: 50px;
         }
         .file-item {
-            width: calc(100% / 7 - 20px);
+            width: 150px;
             text-align: center;
         }
         .file-item .file-preview-container {
